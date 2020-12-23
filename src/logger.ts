@@ -15,6 +15,11 @@ const systemInfoLogger = createLogger({
 });
 
 const actionsLogger = createLogger({
+  exceptionHandlers: [
+    new transports.Console(),
+    new transports.File({ filename: 'exception.log' })
+  ],
+  exitOnError: false,
   format: combine(
     timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'

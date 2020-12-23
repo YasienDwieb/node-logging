@@ -3,7 +3,7 @@ import { systemInfoLogger, actionsLogger } from './logger'
 const PORT = process.env.PORT || 3000
 
 const app = express()
-app.use( (req, res, done) => {
+app.use((req, res, done) => {
     actionsLogger.info(req.originalUrl);
     done();
 });
@@ -13,7 +13,6 @@ const handler = (func: any) => (req: any, res: any) => {
         actionsLogger.info('server.handler.begun')
         func(req, res)
     } catch (error) {
-        actionsLogger.error(error)
         res.end('an error occured')
     }
 }
@@ -34,6 +33,11 @@ app.get('/doAction', (req, res) => {
     res.end('doAction handler hit')
 })
 
+app.get('/causeError', handler((req: any, res: any) => {
+    const emptyObject = req.body
+    res.end(emptyObject.name.otherValus)
+}))
+
 app.listen(PORT, () => {
-    systemInfoLogger.info('started listening')
+    systemInfoLogger.info(`started listening on PORT ${PORT}`)
 })
