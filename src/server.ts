@@ -4,12 +4,23 @@ const PORT = process.env.PORT || 3000
 
 const app = express()
 app.get('/', (req, res) => {
-    actionsLogger.info(req)
+    actionsLogger.info({
+        'cookies': req.cookies,
+        'headers': req.headers,
+        'ip': req.ip,
+        'query': req.query,
+    })
     res.end('request received')
 })
 
 app.get('/doAction', (req, res) => {
-    actionsLogger.info(req)
+    actionsLogger.info({
+        'body': req.body,
+        'cookies': req.cookies,
+        'headers': req.headers,
+        'ip': req.ip,
+        'query': req.query,
+    })
     res.end('doAction handler hit')
 })
 
