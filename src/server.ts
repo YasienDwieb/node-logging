@@ -3,15 +3,25 @@ import { systemInfoLogger, actionsLogger } from './logger'
 const PORT = process.env.PORT || 3000
 
 const app = express()
-app.get('/', (req, res) => {
-    actionsLogger.info({
-        'cookies': req.cookies,
-        'headers': req.headers,
-        'ip': req.ip,
-        'query': req.query,
-    })
+app.use( (req, res, done) => {
+    actionsLogger.info(req.originalUrl);
+    done();
+});
+
+const handler = (func: any) => (req: any, res: any) => {
+    try {
+        actionsLogger.info('server.handler.begun')
+        func(req, res)
+    } catch (error) {
+        actionsLogger.error(error)
+        res.end('an error occured')
+    }
+}
+
+app.get('/', handler((req: any, res: any) => {
     res.end('request received')
-})
+}))
+
 
 app.get('/doAction', (req, res) => {
     actionsLogger.info({
