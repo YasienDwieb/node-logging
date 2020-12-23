@@ -1,5 +1,6 @@
 import express from 'express'
 import { systemInfoLogger, actionsLogger } from './logger'
+import { EventEmitter } from 'events';
 const PORT = process.env.PORT || 3000
 
 const app = express()
@@ -7,6 +8,12 @@ app.use((req, res, done) => {
     actionsLogger.info(req.originalUrl);
     done();
 });
+
+const emitter = new EventEmitter();
+emitter.on('job.processing.done', (data) => {
+    actionsLogger.info('job.processing.done.results', data)
+})
+
 
 const handler = (func: any) => (req: any, res: any) => {
     try {
@@ -23,13 +30,15 @@ app.get('/', handler((req: any, res: any) => {
 
 
 app.get('/doAction', (req, res) => {
-    actionsLogger.info({
-        'body': req.body,
-        'cookies': req.cookies,
-        'headers': req.headers,
-        'ip': req.ip,
-        'query': req.query,
-    })
+    setTimeout(() => {
+        emitter.emit('job.processing.done', {
+            'body': req.body,
+            'cookies': req.cookies,
+            'headers': req.headers,
+            'ip': req.ip,
+            'query': req.query,
+        })
+    }, 10000)
     res.end('doAction handler hit')
 })
 
